@@ -90,8 +90,8 @@ import kotlin.math.roundToInt
  *  - adlibs on their own smaller row under the lead, duets aligned to the opposite side
  *  - interlude dots for gaps >= 3s (and long intros)
  *  - lines dim by state (1.0 / 0.51 / 0.497) and blur with distance from the active line (API 31+)
- *  - the web player's type: Space Grotesk 700 at [LyricsLook.fontSize], long lines scaled down
- *    by [lyricLineFit], in Now Playing's ink ([LyricsLook])
+ *  - the web player's type: Space Grotesk 700 at [LyricsLook.fontSize]; a long line wraps between
+ *    words at that size, in Now Playing's ink ([LyricsLook])
  *
  * Nothing tracks "the current word": every syllable derives its own phase from the clock, so
  * overlapping words / lines / adlibs are all animated independently. All per-frame values live in
@@ -244,10 +244,6 @@ private fun LineItem(
     val blur by animateFloatAsState(blurTarget, tween(BLUR_FADE_MS), label = "line-blur")
 
     val line = item.line
-    // A long line shrinks (to 60% at most) so it usually holds on one row; past that it wraps.
-    val fit = remember(line) { lyricLineFit(line.lead.text) }
-    val leadStyle = remember(ctx, fit) { ctx.leadStyle.copy(fontSize = ctx.leadStyle.fontSize * fit) }
-    val bgStyle = remember(ctx, fit) { ctx.bgStyle.copy(fontSize = ctx.bgStyle.fontSize * fit) }
     val description = remember(line) { line.lead.text }
     // Direction comes from the line's own text, not the phone's locale.
     val lineDirection = remember(line) {
@@ -271,9 +267,10 @@ private fun LineItem(
                 .padding(horizontal = ctx.look.sidePadding, vertical = ctx.look.lineGap)
                 .clearAndSetSemantics { contentDescription = description },
         ) {
-            GroupRow(line.lead, ctx, leadStyle, ctx.bright, ctx.dim, line.oppositeAligned)
+            // Full size on every line: [GroupRow] wraps between words when the line is longer than the width.
+            GroupRow(line.lead, ctx, ctx.leadStyle, ctx.bright, ctx.dim, line.oppositeAligned)
             line.background.forEach { adlib ->
-                GroupRow(adlib, ctx, bgStyle, ctx.bgBright, ctx.bgDim, line.oppositeAligned, Modifier.padding(top = 4.dp))
+                GroupRow(adlib, ctx, ctx.bgStyle, ctx.bgBright, ctx.bgDim, line.oppositeAligned, Modifier.padding(top = 4.dp))
             }
         }
     }
