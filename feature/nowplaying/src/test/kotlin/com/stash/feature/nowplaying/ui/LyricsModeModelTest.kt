@@ -106,17 +106,6 @@ class LyricsModeModelTest {
         assertEquals(0f, lyricFontSizeSp(10f), 0.001f)
     }
 
-    @Test fun `short lines keep full size, long ones shrink to no less than 60 percent`() {
-        assertEquals(1f, lyricLineFit("x".repeat(25)), 0f)
-        assertEquals(25f / 30f, lyricLineFit("x".repeat(30)), 0.0001f)
-        assertEquals(0.6f, lyricLineFit("x".repeat(80)), 0f)
-    }
-
-    @Test fun `fit counts characters, not UTF-16 units`() {
-        // 20 emoji are 40 UTF-16 units but 20 characters: still full size.
-        assertEquals(1f, lyricLineFit("🎵".repeat(20)), 0f)
-    }
-
     @Test fun `the live line anchors at 16 percent, or 1_2 em on a short area`() {
         assertEquals(160f, lyricAnchorPx(fontPx = 60f, viewportPx = 1000f), 0.001f)
         assertEquals(120f, lyricAnchorPx(fontPx = 100f, viewportPx = 500f), 0.001f)

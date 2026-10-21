@@ -88,7 +88,7 @@ internal data class LyricsLook(
     /** Room under the last line, so it too can rise to [anchor]. */
     val bottomRoom: Dp,
 ) {
-    /** The bold display line, scaled by [fit] (see [lyricLineFit]). */
+    /** The bold display line at full size; [fit] scales it (the instrumental-break notes use a smaller one). */
     fun lineStyle(fit: Float = 1f): TextStyle = TextStyle(
         fontFamily = SpaceGrotesk,
         fontWeight = FontWeight.Bold,
@@ -179,7 +179,8 @@ internal fun LyricsLineRenderer(
                     modifier = rowModifier,
                 )
             } else {
-                val style = remember(line.text, look) { look.lineStyle(lyricLineFit(line.text)) }
+                // Full size on every line: a line longer than the width wraps between words.
+                val style = remember(look) { look.lineStyle() }
                 Text(text = line.text, style = style, color = color, modifier = rowModifier)
             }
         }

@@ -75,24 +75,12 @@ internal const val LYRICS_SIDE_PAD_DP = 24f
 /** The web's ceiling on phones (`--lyr-max: 34px`). */
 private const val LYRICS_MAX_FONT_SP = 34f
 
-/** Lines this long or shorter keep the full size; the web's `fit` rule. */
-private const val FIT_CHARS = 25
-
-/** No line shrinks below this share of the full size. */
-private const val FIT_MIN = 0.6f
-
 /**
  * Lyric size for a column [widthDp] wide: `min(34, (width - 2 pad) / 14)`, so about 14 bold em fit
  * a line (~24sp on a 393dp Pixel 5).
  */
 internal fun lyricFontSizeSp(widthDp: Float): Float =
     min(LYRICS_MAX_FONT_SP, max(0f, widthDp - 2 * LYRICS_SIDE_PAD_DP) / 14f)
-
-/** A long line shrinks by 25 / its length, never below 60%: most lines then hold on one row. */
-internal fun lyricLineFit(text: String): Float {
-    val chars = text.codePointCount(0, text.length)
-    return if (chars <= FIT_CHARS) 1f else max(FIT_MIN, FIT_CHARS.toFloat() / chars)
-}
 
 /** Where the live line's top sits in the lyrics area: `max(1.2 em, 16% of its height)`. */
 internal fun lyricAnchorPx(fontPx: Float, viewportPx: Float): Float = max(1.2f * fontPx, 0.16f * viewportPx)
